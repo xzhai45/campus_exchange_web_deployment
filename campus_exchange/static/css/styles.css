@@ -1,0 +1,129 @@
+/* General Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+  }
+  
+/* Make sure header text is black */
+header {
+  background: url("/static/img/background.jpg") no-repeat center center;
+  background-size: cover;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+/* Ensure all text inside the header is black */
+header h1, header p {
+  color: rgb(50, 50, 50) !important;
+  filter: brightness(1); /* Ensures black text even if overridden */
+}
+
+  
+  /* Navigation */
+  nav {
+  display: flex;
+  justify-content: space-around;
+  background-color: #005bb5;
+  padding: 10px;
+  }
+
+  nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  }
+
+  /* Container */
+  .container {
+  padding: 50px 20px;
+  text-align: center;
+  }
+
+  /* Background Styling for Index Page */
+  .bg-index {
+  background: url("/static/img/background.jpg") no-repeat fixed;
+  background-size: cover;
+  }
+
+  /* Search Bar */
+  .search-bar {
+  margin: 20px auto;
+  width: 60%;
+  display: flex;
+  justify-content: center;
+  }
+
+  .search-bar input {
+  width: 80%;
+  padding: 10px;
+  font-size: 16px;
+  }
+
+  .search-bar button {
+  padding: 10px 15px;
+  background-color: #0073e6;
+  color: white;
+  border: none;
+  cursor: pointer;
+  }
+
+  /* Featured Listings */
+  .featured {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 30px;
+  }
+
+  .item {
+  background: white;
+  padding: 15px;
+  margin: 10px;
+  width: 200px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  text-align: center;
+  }
+
+  /* Call-to-Action */
+  .cta {
+  margin-top: 30px;
+  }
+
+  .cta button {
+  padding: 15px 25px;
+  font-size: 18px;
+  background-color: #0073e6;
+  color: white;
+  border: none;
+  cursor: pointer;
+  }
+
+
+  /* Footer 
+  footer {
+  background-color: #005bb5;
+  color: white;
+  text-align: center;
+  padding: 15px;
+  margin-top: 50px;
+  }
+  */
+
+  #map {
+    height: 500px !important;
+    width: 100% !important;
+  }
+
+  .card-body {
+    background-color: #f5f5f5;
+    color: rgb(0, 0, 0);
+    padding: 15px;
+    border-radius: 8px;
+  }
+  
+
+
+  

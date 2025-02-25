@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="p-3 mt-4">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card shadow p-3 mb-4 rounded">
+          
+          <div class="card-body">
+            <h2 class="text-center">Edit Listing</h2>
+            <hr />
+
+            <!-- Edit Listing Form -->
+            <form method="POST" enctype="multipart/form-data" autocomplete="off">
+              {% csrf_token %}
+
+              <div class="mb-3">
+                {{ listing_form.as_p }}  <!-- Render form fields -->
+              </div>
+
+              <!-- Existing Images Section -->
+              <div class="mb-3">
+                <label class="form-label">Existing Images:</label>
+                <div class="row">
+                  {% for img in listing.images.all %}
+                    <div class="col-md-3 text-center">
+                      <img src="{{ img.image.url }}" class="img-thumbnail" width="100">
+                      <br>
+                      <a href="{% url 'delete_listing_image' img.id %}" class="btn btn-danger btn-sm mt-2">Delete</a>
+                    </div>
+                  {% empty %}
+                    <p class="text-muted">No images uploaded yet.</p>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <!-- New Image Upload -->
+              <div class="mb-3">
+                <label class="form-label">Upload New Images:</label>
+                <input type="file" name="images[]" multiple class="form-control">
+              </div>
+
+              <!-- Submit & Delete Buttons -->
+              <div class="text-center mt-3">
+                <button type="submit" class="btn bg-dark text-white">Save Changes</button>
+                <a href="{% url 'delete_listing' listing.id %}" class="btn btn-danger">Delete Listing</a>
+                <a href="{% url 'listings.index' %}" class="btn btn-secondary">Cancel</a>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

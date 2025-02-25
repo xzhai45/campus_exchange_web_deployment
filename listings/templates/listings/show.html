@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+
+<div class="container my-5">
+    <div class="row">
+        <!-- Listing Image -->
+        <div class="col-md-6">
+            <!-- ✅ Bootstrap Carousel for Single Listing Images -->
+            <div id="carousel{{ listing.id }}" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% if listing.images.all %}
+                        {% for img in listing.images.all %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <img src="{{ img.image.url }}" class="d-block w-100" alt="{{ listing.name }}">
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="carousel-item active">
+                            <img src="{% static 'img/default-placeholder.png' %}" class="d-block w-100" alt="No image available">
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- ✅ Left and Right Controls -->
+                {% if listing.images.all|length > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ listing.id }}" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ listing.id }}" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Listing Details -->
+        <div class="col-md-6">
+            <h2>{{ listing.name }}</h2>
+            <p class="text-muted">{{ listing.description }}</p>
+            
+            <!-- Price & Availability -->
+            <h4 class="text-primary">${{ listing.price }}</h4>
+            {% if listing.available %}
+                <span class="badge bg-success">Available</span>
+            {% else %}
+                <span class="badge bg-danger">Sold</span>
+            {% endif %}
+
+            <!-- Additional Information -->
+            <ul class="list-group mt-3">
+                <li class="list-group-item"><strong>Category:</strong> {{ listing.category }}</li>
+                <li class="list-group-item"><strong>Condition:</strong> {{ listing.condition }}</li>
+                <li class="list-group-item"><strong>Location:</strong> {{ listing.location }}</li>
+                <li class="list-group-item"><strong>Listing Date:</strong> {{ listing.listing_date }}</li>
+                <li class="list-group-item"><strong>Views:</strong> {{ listing.views }}</li>
+                {% if listing.rating %}
+                    <li class="list-group-item"><strong>Rating:</strong> ⭐ {{ listing.rating }}/5</li>
+                {% endif %}
+                <li class="list-group-item">
+                    <strong>Tags:</strong>
+                    {% for tag in listing.tags.split %}
+                        <span class="badge bg-secondary">{{ tag }}</span>
+                    {% endfor %}
+                </li>
+            </ul>
+
+            <!-- Seller Contact -->
+            {% if user.is_authenticated and user.email != listing.seller %}
+            <div class="mt-4">
+                <h5>Seller: {{ listing.seller }}</h5>
+                <a href="mailto:{{ listing.seller_contact }}" class="btn btn-dark">
+                    Contact Seller
+                </a>
+            {% endif %}
+
+
+            <!-- Show "Write a Review" button only if user is not the seller -->
+            {% if user.is_authenticated and user.email != listing.seller %}
+            <div class="mt-3">
+                <button class="btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#reviewForm">
+                    Write a Review
+                </button>
+            </div>
+
+            <div class="collapse mt-3" id="reviewForm">
+                <div class="card shadow p-3 rounded">
+                    <div class="card-body">
+                        <b class="text-start">Create a Review</b>
+                        <br /><br />
+                        <form method="POST" action="{% url 'listings.create_review' id=listing.id %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Comment:</label>
+                                <textarea name="comment" required class="form-control" id="comment"></textarea>
+                            </div>
+                            <button type="submit" class="btn bg-dark text-white">Add Review</button>
+                        </form>
+
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Show Past Reviews for Everyone -->
+            <h4 class="mt-4">Past Reviews</h4>
+            <div class="list-group">
+                {% for review in reviews %}
+                    <div class="list-group-item">
+                        <p><strong>{{ review.user.email }}</strong> <span class="text-muted">({{ review.date|date:"F j, Y, g:i a" }})</span></p>
+                        <p>{{ review.comment }}</p>
+                        {% if user.is_authenticated and user == review.user %}
+                            <a class="btn btn-primary btn-sm" href="{% url 'listings.edit_review' id=listing.id review_id=review.id %}">Edit</a>
+                        {% endif %}
+                    </div>
+                {% empty %}
+                    <p class="text-muted">No reviews yet. Be the first to write one!</p>
+                {% endfor %}
+            </div>
+
+            <!-- Back to Listings Button -->
+            <div class="mt-3">
+                <a href="{% url 'listings.index' %}" class="btn btn-outline-dark">Back to Listings</a>
+            </div>
+        </div> <!-- Closing div for col-md-6 -->
+    </div> <!-- Closing div for row -->
+</div> 
+</div> <!-- Closing div for container -->
+
+
+{% endblock content %}

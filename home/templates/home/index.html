@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block body_class %}bg-index{% endblock %}
+{% load static %}
+
+{% block content %}
+<head>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+
+<div class="text-center">
+  <h2>Welcome to Campus Exchange</h2>
+  <p>Find the best deals on books, gadgets, bikes, and more—right within your campus!</p>
+  
+  <div id="map" style="height: 500px; width: 100%;"></div>
+  <hr>
+
+  <!-- Distance Filter Dropdown -->
+  <div class="text-center mt-3">
+      <label for="distanceFilter" class="fw-bold">Show Listings Within:</label>
+      <select id="distanceFilter" class="form-select w-50 mx-auto">
+          <option value="5">5 miles</option>
+          <option value="10" selected>10 miles</option>
+          <option value="20">20 miles</option>
+          <option value="50">50 miles</option>
+          <option value="100">100 miles</option>
+          <option value="no_limit">No Limit</option>
+      </select>
+  </div>
+
+    <!-- Listings Section -->
+    <div class="row mt-4" id="listingsContainer">
+        {% for listing in listings %}
+        <div class="col-md-4 col-lg-3 mb-4">
+            <div class="card shadow-sm border-0 text-center"> 
+                <div class="card-body">
+                    <h5 class="card-title">{{ listing.name }}</h5>
+                    <p class="fw-bold text-primary">${{ listing.price }}</p>
+                    <a href="{% url 'listings.show' listing.id %}" class="btn btn-dark btn-sm">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col text-center">
+            <p class="text-muted">No listings available at the moment.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      let userLat, userLon;
+      let defaultDistance = "10";  // Default to 10 miles
+      let apiUrl = "{% url 'listings_api' %}";
+      let markersLayer = L.layerGroup();  // ✅ Layer group to store listing markers
+
+      // Initialize the map with a default view
+      var map = L.map('map').setView([33.7756, -84.3963], 12);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      function getUserLocation() {
+          if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(
+                  function (position) {
+                      userLat = position.coords.latitude;
+                      userLon = position.coords.longitude;
+                      map.setView([userLat, userLon], 12);
+                      
+                      // ✅ Add user location marker with custom icon
+                      let userMarker = L.marker([userLat, userLon], {
+                          icon: L.icon({
+                              iconUrl: "https://upload.wikimedia.org/wikipedia/commons/e/ec/RedDot.svg",
+                              iconSize: [20, 20]
+                          })
+                      }).addTo(map).bindPopup("You are here").openPopup();
+
+                      fetchListings(userLat, userLon, defaultDistance);
+                  },
+                  function () {
+                      console.warn("User denied location access. Showing all listings.");
+                      fetchListings(null, null, "no_limit");
+                  }
+              );
+          } else {
+              console.warn("Geolocation not supported. Showing all listings.");
+              fetchListings(null, null, "no_limit");
+          }
+      }
+
+      function fetchListings(lat, lon, distance) {
+          let url = `${apiUrl}?distance=${distance}`;
+          if (lat && lon) {
+              url += `&lat=${lat}&lon=${lon}`;
+          }
+
+          fetch(url)
+              .then(response => response.json())
+              .then(data => {
+                  console.log("Filtered Listings:", data);
+                  updateListings(data);
+                  updateMapMarkers(data);
+              })
+              .catch(error => console.error("Error fetching listings:", error));
+      }
+
+      function updateListings(listings) {
+          const container = document.getElementById("listingsContainer");
+          container.innerHTML = "";  // Clear previous listings
+
+          listings.forEach(listing => {
+              let cardHtml = `
+                <div class="col-md-4 col-lg-3 mb-4">
+                  <div class="card shadow-sm border-0"> 
+                      <div class="card-body text-center">
+                          <h5 class="card-title">${listing.name}</h5>
+                          <p class="fw-bold text-primary">$${listing.price}</p>
+                          <a href="/listings/${listing.id}" class="btn btn-dark btn-sm">View Details</a>
+                      </div>
+                  </div>
+              </div>`;
+              container.innerHTML += cardHtml;
+          });
+      }
+
+      function updateMapMarkers(listings) {
+          markersLayer.clearLayers();  // ✅ Remove old markers before adding new ones
+
+          listings.forEach(listing => {
+              if (listing.latitude && listing.longitude) {  // ✅ Ensure coordinates exist
+                  let marker = L.marker([listing.latitude, listing.longitude])
+                      .bindPopup(`<b>${listing.name}</b><br>${listing.location}<br>Price: $${listing.price}`);
+                  
+                  markersLayer.addLayer(marker);  // ✅ Add marker to layer group
+              }
+          });
+
+          markersLayer.addTo(map);  // ✅ Add all markers to the map
+      }
+
+      // Handle Distance Filter Change
+      document.getElementById("distanceFilter").addEventListener("change", function () {
+          let selectedDistance = this.value;
+          fetchListings(userLat, userLon, selectedDistance);
+      });
+
+      getUserLocation();
+  });
+</script>
+
+</div>
+{% endblock %}
