@@ -27,7 +27,7 @@
                   {% if listing.images.all %}
                       {% for img in listing.images.all %}
                           <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                              <img src="{{ img.image.url }}" class="d-block w-100" alt="{{ listing.name }}">
+                            <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ listing.name }}">
                           </div>
                       {% endfor %}
                   {% else %}
