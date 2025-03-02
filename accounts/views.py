@@ -66,7 +66,7 @@ def signup(request):
         form = CustomUserCreationForm()
 
     template_data['form'] = form
-    return render(request, 'accounts/login.html', {'template_data': template_data})
+    return render(request, 'accounts/signup.html', {'template_data': template_data})
 
 def verify_email(request, token):
     try:
@@ -80,7 +80,7 @@ def verify_email(request, token):
     except CustomUser.DoesNotExist:
         messages.error(request, "Invalid verification link.")
     
-    return redirect('accounts.signup')
+    return redirect('accounts.login')
 
 def login(request):
     template_data = {'title': 'Login'}
