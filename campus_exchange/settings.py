@@ -128,7 +128,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent  # Ensure BASE_DIR is set corr
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Where collectstatic will store files
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'campus_exchange', 'static')]
 
 # Ensure Django serves static files correctly
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
