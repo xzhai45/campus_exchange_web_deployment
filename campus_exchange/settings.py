@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
 from pathlib import Path
-
+from dotenv import load_dotenv
+import django_heroku
+import dj_database_url
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,12 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-%he=@zs9#3o8m4w(=u(9gnbrep&)r5u_fllks&-($en!gm$nb9"
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -122,9 +125,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'campus_exchange', 'static'),
+    os.path.join(BASE_DIR, 'static'),
 ]
+
+# Activate Django-Heroku.
+django_heroku.settings(locals())
 
 
 
@@ -147,9 +154,9 @@ EMAIL_HOST = 'smtp.gmail.com'  # Use your email provider
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'campusexchange321@gmail.com'  # Replace with your email
-EMAIL_HOST_PASSWORD = 'jevsvynbsdpgedlx'  # Replace with your app password
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")  
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 SITE_URL = 'http://127.0.0.1:8000/'  
 
-GOOGLE_MAPS_API_KEY = "AIzaSyB6YjK8jZchIjZiJVxeYTJF2JuwCn0JQFk"
+GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
