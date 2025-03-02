@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager,Permissions
 from django.core.exceptions import ValidationError
 from django.db import models
 import uuid
+from cloudinary.models import CloudinaryField  
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -54,7 +55,7 @@ class Profile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="profile")
     name = models.CharField(max_length=255, blank=True, null=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
-    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    profile_picture = CloudinaryField(upload_to='profile_pics/', blank=True, null=True)
     rating = models.FloatField(default=0.0)  # Default rating starts at 0
 
     def __str__(self):
