@@ -8,7 +8,6 @@ from .models import CustomUser
 from django.contrib.auth.decorators import login_required
 from .forms import ProfileUpdateForm
 
-
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.urls import reverse_lazy
 from django.contrib.auth import get_user_model

@@ -155,6 +155,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'campusexchange321@gmail.com'  # Replace with your email
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")  
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+SITE_URL = 'https://campus-exchange-a4db2b5c5de4.herokuapp.com'  # No trailing slash!
 
-SITE_URL = 'https://campus-exchange-a4db2b5c5de4.herokuapp.com/'  
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
