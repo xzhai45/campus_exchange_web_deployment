@@ -66,7 +66,7 @@ def signup(request):
         form = CustomUserCreationForm()
 
     template_data['form'] = form
-    return render(request, 'accounts/signup.html', {'template_data': template_data})
+    return render(request, 'accounts/login.html', {'template_data': template_data})
 
 def verify_email(request, token):
     try:
