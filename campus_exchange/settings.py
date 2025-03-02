@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from pathlib import Path
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -122,11 +123,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+
+BASE_DIR = Path(__file__).resolve().parent.parent  # Ensure BASE_DIR is set correctly
+
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Where collectstatic will store files
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+
 # Ensure Django serves static files correctly
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
@@ -153,6 +156,5 @@ EMAIL_HOST_USER = 'campusexchange321@gmail.com'  # Replace with your email
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")  
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-SITE_URL = 'http://127.0.0.1:8000/'  
-
+SITE_URL = 'https://campus-exchange-a4db2b5c5de4.herokuapp.com/'  
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
