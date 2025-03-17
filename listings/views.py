@@ -51,8 +51,8 @@ def index(request):
             Q(tags__icontains=search_query)
         )
 
-    # 🔹 Paginate the listings: 16 per page
-    paginator = Paginator(listings, 16)
+    # 12 listings per page
+    paginator = Paginator(listings, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

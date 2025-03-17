@@ -66,7 +66,9 @@
     </div>
     {% if user.is_authenticated %}
     <div class="text-center mt-4">
-        <a href="{% url 'my_listings' %}" class="btn btn-primary">Manage Your Listings</a>
+      <a href="{% url 'my_listings' %}" class="btn btn-dark px-2 py-1">
+        Manage Your Listings
+      </a>      
     </div>
     {% endif %}
     <!-- Clean & Compact Pagination -->
