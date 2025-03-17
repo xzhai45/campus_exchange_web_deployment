@@ -1,7 +1,7 @@
 
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Listing, Review
-from django.db.models import Q # For searching
+from django.db.models import Q 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Listing, ListingImage, Review
@@ -10,6 +10,7 @@ from django.http import JsonResponse
 from .models import Listing
 from django.conf import settings
 from math import radians, cos, sin, sqrt, atan2
+from django.core.paginator import Paginator
 
 # Haversine Formula for Distance Calculation
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -41,19 +42,24 @@ def listings_api(request):
     return JsonResponse(list(listings), safe=False)
 # Listings Page View
 def index(request):
-    search_query = request.GET.get('search', '').strip()  # Get search input & remove extra spaces
-    listings = Listing.objects.all().order_by('-listing_date')  # Default: Get all listings
+    search_query = request.GET.get('search', '').strip()
+    listings = Listing.objects.all().order_by('-listing_date')
 
     if search_query:
         listings = listings.filter(
-            Q(name__icontains=search_query) |  # Match search in `name`
-            Q(tags__icontains=search_query)   # Match search in `tags` (handles hashtags)
+            Q(name__icontains=search_query) |
+            Q(tags__icontains=search_query)
         )
+
+    # 🔹 Paginate the listings: 16 per page
+    paginator = Paginator(listings, 16)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     context = {
         'title': 'Listings',
-        'listings': listings,
-        'search_query': search_query,  #  Pass search term back to template
+        'listings': page_obj,  # pass page object instead of full queryset
+        'search_query': search_query,
         'is_my_listings': False
     }
     return render(request, 'listings/index.html', context)
@@ -131,12 +137,18 @@ def create_listing(request):
             'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY # Pass the API key to the template
         })
 
+
+def set_location(request):
+    return render(request, 'listings/set_location.html', {
+        'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY
+    })
+
+
     
 @login_required
 def edit_listing(request, listing_id):
     listing = get_object_or_404(Listing, id=listing_id)
 
-    # ✅ Ensure the user is the owner of the listing
     if listing.user != request.user:
         messages.error(request, "You are not authorized to edit this listing.")
         return redirect('listings.index')
@@ -145,26 +157,24 @@ def edit_listing(request, listing_id):
         listing_form = ListingForm(request.POST, request.FILES, instance=listing)
 
         if listing_form.is_valid():
-            listing_form.save()  # ✅ Save changes to text fields
+            listing_form.save()
 
-            # ✅ Handle new image uploads only if provided
             images = request.FILES.getlist('images')
             if images:
                 for image in images:
                     ListingImage.objects.create(listing=listing, image=image)
 
             messages.success(request, "Listing updated successfully!")
-            return redirect('my_listings')  # Redirect back to My Listings
-
+            return redirect('my_listings')
         else:
             messages.error(request, "There was an error updating the listing.")
-
     else:
         listing_form = ListingForm(instance=listing)
 
     return render(request, 'listings/edit_listing.html', {
         'listing_form': listing_form,
-        'listing': listing
+        'listing': listing,
+        'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY
     })
 
 

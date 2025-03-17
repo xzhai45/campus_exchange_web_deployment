@@ -14,6 +14,8 @@ urlpatterns = [
     path('my-listings/', views.my_listings, name='my_listings'),
     path('', views.index, name='listings.index'),
     path('api/listings/', views.listings_api, name='listings_api'),
+    path('set-location/', views.set_location, name='set_location'),
+
 
 
 ]

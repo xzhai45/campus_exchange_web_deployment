@@ -4,15 +4,6 @@
 <div class="container mt-5">
     <h2 class="text-center mb-4">Create a New Listing</h2>
 
-    <!-- Success/Error Messages -->
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endfor %}
-    {% endif %}
 
     <form method="POST" enctype="multipart/form-data" class="mt-4">
         {% csrf_token %}
@@ -69,12 +60,31 @@
         </div>
 
         <!-- Location with Google Autocomplete -->
-        <div class="row mb-3">
+        <div class="row mb-3 align-items-center">
             <label for="location" class="col-md-3 col-form-label text-end">Location:</label>
-            <div class="col-md-6">
-                <input type="text" name="location" id="location" class="form-control" required placeholder="Enter location">
+            <div class="col-md-6 d-flex">
+                <input type="text" name="location" id="location" class="form-control me-2" required placeholder="Enter location">
+                <button type="button" class="btn btn-outline-secondary" onclick="openSetPin()">Set Pin</button>
             </div>
         </div>
+        
+        <script>
+            function openSetPin() {
+                // Save form data to sessionStorage
+                const fields = ['name', 'price', 'description', 'seller', 'seller_contact', 'tags'];
+                fields.forEach(field => {
+                    const el = document.getElementById(field);
+                    if (el) sessionStorage.setItem(field, el.value);
+                });
+            
+                const available = document.getElementById("available");
+                sessionStorage.setItem("available", available.checked ? "true" : "false");
+            
+                const locationValue = document.getElementById('location').value;
+                const url = `{% url 'set_location' %}?location=` + encodeURIComponent(locationValue);
+                window.location.href = url;
+            }
+            </script>
 
         <!-- Hidden Inputs for Latitude & Longitude -->
         <input type="hidden" name="latitude" id="latitude">
@@ -116,6 +126,31 @@
 <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places"></script>
 
 <script>
+    window.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+    const lat = params.get("lat");
+    const lng = params.get("lng");
+    const location = params.get("location");
+
+    if (lat) document.getElementById("latitude").value = lat;
+    if (lng) document.getElementById("longitude").value = lng;
+    if (location) document.getElementById("location").value = decodeURIComponent(location);
+
+    // Restore form data
+    const fields = ['name', 'price', 'description', 'seller', 'seller_contact', 'tags'];
+    fields.forEach(field => {
+        const value = sessionStorage.getItem(field);
+        if (value !== null) {
+            const el = document.getElementById(field);
+            if (el) el.value = value;
+        }
+    });
+
+    const availableValue = sessionStorage.getItem("available");
+    if (availableValue === "true") {
+        document.getElementById("available").checked = true;
+    }
+});
   function initAutocomplete() {
       var input = document.getElementById('location');
       var autocomplete = new google.maps.places.Autocomplete(input);
@@ -134,5 +169,18 @@
   }
 
   google.maps.event.addDomListener(window, 'load', initAutocomplete);
+
+  document.querySelector("form").addEventListener("submit", function () {
+    sessionStorage.clear();
+  });
+
+  window.addEventListener("beforeunload", function () {
+    if (document.activeElement && document.activeElement.type === "submit") {
+      sessionStorage.clear();
+    }
+  });
 </script>
+
+    
+
 {% endblock %}

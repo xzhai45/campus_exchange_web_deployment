@@ -2,6 +2,7 @@ from django.shortcuts import render, HttpResponse
 from listings.models import Listing
 from math import radians, cos, sin, sqrt, atan2
 from django.http import JsonResponse
+from django.conf import settings
 
 def listings_api(request):
     lat = request.GET.get("lat")
@@ -89,7 +90,12 @@ def index(request):
         'listings': listings,
         'markers': markers,  # Pass markers for map rendering
     }
-    return render(request, 'home/index.html', context)
+    return render(request, 'home/index.html', {
+        'title': 'Listings',
+        'listings': listings,
+        'markers': markers,
+        'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY
+    })
 
 
 def about(request):
