@@ -1,0 +1,26 @@
+/* Listing Image*/
+.img-card-200 {
+    width: fit-content;
+    max-height: 200px;
+    }
+  
+    .image-container {
+    width: 100%;        /* Ensure full width */
+    height: 200px;      /* Set a fixed height for uniformity */
+    overflow: hidden;   /* Hide overflow */
+    }
+  
+    .full-image {
+        width: 100%; /* Ensures full width inside its container */
+        max-width: 500px; /* Prevents excessive resizing */
+        height: auto; /* Maintains aspect ratio */
+        max-height: 800px; /* Prevents shrinking */
+        object-fit: cover; /* Keeps proper aspect ratio */
+    }
+    
+    .card-body {
+        background-color: #f1f1f1;
+        color: rgb(0, 0, 0);
+        padding: 15px;
+        border-radius: 8px;
+      }

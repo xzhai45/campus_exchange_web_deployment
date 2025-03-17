@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">My Listings</h2>
+    <hr />
+    <div class="row">
+        {% for listing in listings %}
+            <div class="col-md-4 col-lg-3 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="image-container">
+                        <!-- ✅ Bootstrap Carousel for Listing Images -->
+                        <div id="carousel{{ listing.id }}" class="carousel slide" data-bs-ride="carousel">
+                            
+                            <!-- ✅ Carousel Indicators (Navigation Dots) -->
+                            {% if listing.images.all|length > 1 %}
+                            <div class="carousel-indicators">
+                                {% for img in listing.images.all %}
+                                    <button type="button" data-bs-target="#carousel{{ listing.id }}" data-bs-slide-to="{{ forloop.counter0 }}" 
+                                        {% if forloop.first %} class="active" aria-current="true" {% endif %} 
+                                        aria-label="Slide {{ forloop.counter }}">
+                                    </button>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+
+                            <!-- ✅ Carousel Inner Wrapper -->
+                            <div class="carousel-inner" style="min-height: 200px;">
+                                {% if listing.images.all %}
+                                    {% for img in listing.images.all %}
+                                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                            <img src="{{ img.image.url }}" class="d-block w-100 img-fluid" alt="{{ listing.name }}" style="max-height: 200px; object-fit: cover;">
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <!-- ✅ Default Placeholder Image -->
+                                    <div class="carousel-item active">
+                                        <img class="d-block w-100 img-fluid" alt="No image available">
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- ✅ Left and Right Controls -->
+                            {% if listing.images.all|length > 1 %}
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ listing.id }}" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ listing.id }}" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            {% endif %}
+                        </div> <!-- ✅ Close Carousel Div -->
+                    </div> <!-- ✅ Close Image Container -->
+
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ listing.name }}</h5>
+                        <p class="card-text text-muted">{{ listing.description }}</p>
+                        <p class="fw-bold text-primary">${{ listing.price }}</p>
+                        <a href="{% url 'edit_listing' listing.id %}" class="btn btn-dark btn-sm">Edit</a>
+                        <a href="{% url 'delete_listing' listing.id %}" class="btn btn-danger btn-sm">Delete</a>
+                    </div>
+                </div> <!-- ✅ Close Card -->
+            </div> <!-- ✅ Close Column -->
+        {% empty %}
+            <div class="col text-center">
+                <p class="text-muted">You have no listings yet.</p>
+            </div>
+        {% endfor %}
+    </div> <!-- ✅ Close Row -->
+</div> <!-- ✅ Close Container -->
+{% endblock %}

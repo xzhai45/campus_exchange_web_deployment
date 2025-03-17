@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+
+<div class="p-3">
+  <div class="container">
+    <div class="row mt-3">
+      <div class="col mx-auto mb-3 text-center">
+        <h2>Available Listings</h2>
+        <hr />
+      </div>
+    </div>
+
+    <div class="row">
+      {% if search_query %}
+    <p class="text-muted">Showing results for: <strong>"{{ search_query }}"</strong></p>
+      {% endif %}
+
+      {% for listing in listings%}
+      <div class="col-md-4 col-lg-3 mb-4">
+        <div class="card shadow-sm border-0"> 
+          <div class="image-container">
+            <!-- ✅ Bootstrap Carousel for Listing Images -->
+            <div id="carousel{{ listing.id }}" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner">
+                  {% if listing.images.all %}
+                      {% for img in listing.images.all %}
+                          <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                              <img src="{{ img.image.url }}" class="d-block w-100" alt="{{ listing.name }}">
+                          </div>
+                      {% endfor %}
+                  {% else %}
+                      <div class="carousel-item active">
+                          <img src="{% static 'img/default-placeholder.png' %}" class="d-block w-100" alt="No image available">
+                      </div>
+                  {% endif %}
+              </div>
+
+              <!-- ✅ Left and Right Controls -->
+              {% if listing.images.all|length > 1 %}
+                  <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ listing.id }}" data-bs-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Previous</span>
+                  </button>
+                  <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ listing.id }}" data-bs-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Next</span>
+                  </button>
+              {% endif %}
+          </div>
+          </div>
+          <div class="card-body text-center">
+            <h5 class="card-title">{{ listing.name }}</h5>
+            <p class="card-text text-muted">{{ listing.description }}</p>
+            <p class="fw-bold text-primary">${{ listing.price }}</p>
+            <a href="{% url 'listings.show' listing.id %}" class="btn btn-dark btn-sm">View Details</a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col text-center">
+        <p class="text-muted">No listings available at the moment.</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% if user.is_authenticated %}
+    <div class="text-center mt-4">
+      <a href="{% url 'my_listings' %}" class="btn btn-dark px-2 py-1">
+        Manage Your Listings
+      </a>      
+    </div>
+    {% endif %}
+    <!-- Clean & Compact Pagination -->
+    <div class="row mt-3">
+      <div class="col text-center">
+        <nav class="bg-white py-2" style="background-color: transparent !important;">
+          <ul class="pagination justify-content-center pagination-sm mb-0">
+            {% if listings.has_previous %}
+              <li class="page-item">
+                <a class="page-link px-2 py-1" href="?page={{ listings.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">&laquo;</a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link px-2 py-1">&laquo;</span>
+              </li>
+            {% endif %}
+
+            {% for num in listings.paginator.page_range %}
+              {% if num <= 5 or num > listings.paginator.num_pages|add:"-2" %}
+                {% if num == listings.number %}
+                  <li class="page-item active">
+                    <span class="page-link px-2 py-1">{{ num }}</span>
+                  </li>
+                {% else %}
+                  <li class="page-item">
+                    <a class="page-link px-2 py-1" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a>
+                  </li>
+                {% endif %}
+              {% elif num == 6 %}
+                <li class="page-item disabled"><span class="page-link px-2 py-1">...</span></li>
+              {% endif %}
+            {% endfor %}
+
+            {% if listings.has_next %}
+              <li class="page-item">
+                <a class="page-link px-2 py-1" href="?page={{ listings.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">&raquo;</a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link px-2 py-1">&raquo;</span>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+{% endblock content %}

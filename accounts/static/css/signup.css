@@ -1,0 +1,125 @@
+/* Signup Page Styles */
+.container {
+    max-width: 600px;
+  }
+  
+  /* Card Style */
+  .card {
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Form Labels */
+  .form-label {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  /* Input Fields */
+  .form-control {
+    border-radius: 5px;
+    font-size: 14px;
+    padding: 10px;
+  }
+  
+  /* Input Group (Email) */
+  .input-group-text {
+    background-color: #f8f9fa;
+    border-right: none;
+  }
+  
+  /* Password Requirement Box */
+  .password-info {
+    background: #f8f9fa;
+    border-left: 4px solid #343a40;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 4px;
+  }
+  
+  /* Small Text */
+  .small {
+    font-size: 14px;
+  }
+  
+  /* Error Messages */
+  .alert {
+    font-size: 13px;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
+  
+  /* Submit Button */
+  .btn-sm {
+    font-size: 14px;
+    padding: 8px;
+  }
+/* Profile Page Styles */
+.container {
+  max-width: 600px;
+}
+
+/* Card Styling */
+.card {
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Profile Picture */
+.profile-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid #ddd;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+/* Form Styling */
+.form-label {
+  font-weight: 500;
+  color: #333;
+}
+
+.form-control {
+  border-radius: 5px;
+  font-size: 14px;
+  padding: 10px;
+}
+
+/* Submit and Logout Buttons */
+.btn-primary {
+  font-size: 16px;
+  padding: 10px;
+  width: 100%;
+}
+
+.btn-danger {
+  font-size: 16px;
+  padding: 10px;
+  width: 100%;
+  text-align: center;
+}
+
+.profile-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto;
+}
+
+.profile-img-wrapper {
+  width: 150px;  /* Set fixed width */
+  height: 150px; /* Set fixed height */
+  border-radius: 50%; /* Makes it circular */
+  overflow: hidden; /* Ensures image does not exceed container */
+  border: 3px solid #ddd; /* Optional border */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+}
+
+.profile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures the image fits nicely */
+}

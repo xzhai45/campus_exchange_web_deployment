@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block body_class %}bg-index{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="text-center">
+  <h2>Welcome to Campus Exchange</h2>
+  <p>Find the best deals on books, gadgets, bikes, and more—right within your campus!</p>
+
+  <!-- Google Map Container -->
+  <div id="map" style="height: 500px; width: 100%;"></div>
+  <hr>
+
+  <!-- Distance Filter Dropdown -->
+  <div class="text-center mt-3">
+    <label for="distanceFilter" class="fw-bold">Show Listings Within:</label>
+    <select id="distanceFilter" class="form-select w-50 mx-auto">
+      <option value="5">5 miles</option>
+      <option value="10" selected>10 miles</option>
+      <option value="20">20 miles</option>
+      <option value="50">50 miles</option>
+      <option value="100">100 miles</option>
+      <option value="no_limit">No Limit</option>
+    </select>
+  </div>
+
+  <!-- Listings Section -->
+  <div class="row mt-4" id="listingsContainer">
+    {% for listing in listings %}
+    <div class="col-md-4 col-lg-3 mb-4">
+      <div class="card shadow-sm border-0 text-center"> 
+        <div class="card-body">
+          <h5 class="card-title">{{ listing.name }}</h5>
+          <p class="fw-bold text-primary">${{ listing.price }}</p>
+          <a href="{% url 'listings.show' listing.id %}" class="btn btn-dark btn-sm">View Details</a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col text-center">
+      <p class="text-muted">No listings available at the moment.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ✅ Google Maps JavaScript API -->
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMap&libraries=geometry" async defer></script>
+
+<script>
+  let map;
+  let userLat, userLon;
+  let markers = [];
+  let defaultDistance = "10";
+  const apiUrl = "{% url 'listings_api' %}";
+
+  function initMap() {
+    // Default location: Emory University
+    const defaultCenter = { lat: 33.7756, lng: -84.3963 };
+    map = new google.maps.Map(document.getElementById("map"), {
+      center: defaultCenter,
+      zoom: 12
+    });
+
+    // Try to get user location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          userLat = position.coords.latitude;
+          userLon = position.coords.longitude;
+
+          const userPosition = new google.maps.LatLng(userLat, userLon);
+          map.setCenter(userPosition);
+
+          new google.maps.Marker({
+            position: userPosition,
+            map,
+            title: "You are here",
+            icon: {
+              url: "https://upload.wikimedia.org/wikipedia/commons/e/ec/RedDot.svg",
+              scaledSize: new google.maps.Size(20, 20)
+            }
+          });
+
+          fetchListings(userLat, userLon, defaultDistance);
+        },
+        () => {
+          console.warn("User denied location access. Showing all listings.");
+          fetchListings(null, null, "no_limit");
+        }
+      );
+    } else {
+      console.warn("Geolocation not supported.");
+      fetchListings(null, null, "no_limit");
+    }
+
+    // Filter Change
+    document.getElementById("distanceFilter").addEventListener("change", function () {
+      const selectedDistance = this.value;
+      fetchListings(userLat, userLon, selectedDistance);
+    });
+  }
+
+  function fetchListings(lat, lon, distance) {
+    let url = `${apiUrl}?distance=${distance}`;
+    if (lat && lon) {
+      url += `&lat=${lat}&lon=${lon}`;
+    }
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        updateListings(data);
+        updateMapMarkers(data);
+      })
+      .catch(error => console.error("Error fetching listings:", error));
+  }
+
+  function updateListings(listings) {
+    const container = document.getElementById("listingsContainer");
+    container.innerHTML = "";
+
+    listings.forEach(listing => {
+      let cardHtml = `
+        <div class="col-md-4 col-lg-3 mb-4">
+          <div class="card shadow-sm border-0 text-center"> 
+            <div class="card-body">
+              <h5 class="card-title">${listing.name}</h5>
+              <p class="fw-bold text-primary">$${listing.price}</p>
+              <a href="/listings/${listing.id}" class="btn btn-dark btn-sm">View Details</a>
+            </div>
+          </div>
+        </div>`;
+      container.innerHTML += cardHtml;
+    });
+  }
+
+  function updateMapMarkers(listings) {
+    // Remove previous markers
+    markers.forEach(marker => marker.setMap(null));
+    markers = [];
+
+    listings.forEach(listing => {
+      if (listing.latitude && listing.longitude) {
+        const marker = new google.maps.Marker({
+          position: { lat: listing.latitude, lng: listing.longitude },
+          map: map,
+          title: listing.name
+        });
+
+        const infoWindow = new google.maps.InfoWindow({
+          content: `<strong>${listing.name}</strong><br>${listing.location}<br>Price: $${listing.price}`
+        });
+
+        marker.addListener("click", () => {
+          infoWindow.open(map, marker);
+        });
+
+        markers.push(marker);
+      }
+    });
+  }
+</script>
+{% endblock %}
