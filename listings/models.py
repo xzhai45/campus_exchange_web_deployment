@@ -2,6 +2,8 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.conf import settings
+from cloudinary.models import CloudinaryField
+
 
 def validate_edu_email(value):
     """Custom validator to ensure the email ends with .edu"""
@@ -18,7 +20,7 @@ class Category(models.TextChoices):
     OTHERS = "Others", "Others"
 
 class Listing(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) # ✅ Ensure listing is linked to a user
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) 
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -47,7 +49,7 @@ class Listing(models.Model):
 
 class ListingImage(models.Model):
     listing = models.ForeignKey(Listing, related_name='images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='listing_images/')  # ✅ Ensure correct upload path
+    image = CloudinaryField('image', blank=True)
 
     def __str__(self):
         return f"Image for {self.listing.name}"
