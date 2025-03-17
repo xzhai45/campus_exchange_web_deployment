@@ -12,16 +12,6 @@
           <div class="card-body">
             <h2 class="text-center">Create Account</h2>
             <hr />
-
-            <!-- Display success message -->
-            {% if messages %}
-              {% for message in messages %}
-                {% if message.tags == "success" %}
-                  <div class="alert alert-info" id="success-message">{{ message }}</div>
-                {% endif %}
-              {% endfor %}
-            {% endif %}
-
             <!-- Display form errors -->
             {% if template_data.form.errors %}
             <div class="alert alert-danger small">

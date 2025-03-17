@@ -127,30 +127,38 @@
 
 <script>
     window.addEventListener("DOMContentLoaded", () => {
-    const params = new URLSearchParams(window.location.search);
-    const lat = params.get("lat");
-    const lng = params.get("lng");
-    const location = params.get("location");
+        const params = new URLSearchParams(window.location.search);
+        const isNew = params.get("new") === "true";
 
-    if (lat) document.getElementById("latitude").value = lat;
-    if (lng) document.getElementById("longitude").value = lng;
-    if (location) document.getElementById("location").value = decodeURIComponent(location);
+        if (isNew) {
+            sessionStorage.clear();
+            // Optional: Remove ?new=true from URL without reload
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
 
-    // Restore form data
-    const fields = ['name', 'price', 'description', 'seller', 'seller_contact', 'tags'];
-    fields.forEach(field => {
-        const value = sessionStorage.getItem(field);
-        if (value !== null) {
-            const el = document.getElementById(field);
-            if (el) el.value = value;
+        const lat = params.get("lat");
+        const lng = params.get("lng");
+        const location = params.get("location");
+
+        if (lat) document.getElementById("latitude").value = lat;
+        if (lng) document.getElementById("longitude").value = lng;
+        if (location) document.getElementById("location").value = decodeURIComponent(location);
+
+        // Restore form data from session
+        const fields = ['name', 'price', 'description', 'seller', 'seller_contact', 'tags'];
+        fields.forEach(field => {
+            const value = sessionStorage.getItem(field);
+            if (value !== null) {
+                const el = document.getElementById(field);
+                if (el) el.value = value;
+            }
+        });
+
+        const availableValue = sessionStorage.getItem("available");
+        if (availableValue === "true") {
+            document.getElementById("available").checked = true;
         }
     });
-
-    const availableValue = sessionStorage.getItem("available");
-    if (availableValue === "true") {
-        document.getElementById("available").checked = true;
-    }
-});
   function initAutocomplete() {
       var input = document.getElementById('location');
       var autocomplete = new google.maps.places.Autocomplete(input);
