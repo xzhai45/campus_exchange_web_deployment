@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from cloudinary.models import CloudinaryField
 
-
 def validate_edu_email(value):
     """Custom validator to ensure the email ends with .edu"""
     if not value.lower().endswith('.edu'):
@@ -49,7 +48,7 @@ class Listing(models.Model):
 
 class ListingImage(models.Model):
     listing = models.ForeignKey(Listing, related_name='images', on_delete=models.CASCADE)
-    image = CloudinaryField('image', blank=True)
+    image = CloudinaryField('image')
 
     def __str__(self):
         return f"Image for {self.listing.name}"
